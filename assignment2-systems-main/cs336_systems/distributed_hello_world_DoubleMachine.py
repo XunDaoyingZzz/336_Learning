@@ -31,14 +31,14 @@ autoProxy=true
 
 
 def run():
-    # 1. 从环境变量获取配置
+    # 从环境变量获取配置
     # 这些变量我们在 PyCharm 的设置里填进去，不需要改代码
     rank = int(os.environ["RANK"]) #主机是0，副机是1
     local_gpu_id = 0  # 单机单卡，默认用设备 0
 
     print(f"--> [进程 {rank}] 正在启动，准备连接 Master...")
 
-    # 2. 初始化分布式后端 (NCCL)
+    # 初始化分布式后端
     try:
         dist.init_process_group(backend="nccl", init_method="env://")  #init_method指定 env://会读取我们写在编辑配置里的MASTER_ADDR和MASTER_PORT，然后主机启动一个服务器监听29500端口，等待副机进来连
         print(f"--> [进程 {rank}] NCCL 初始化成功！握手完成。")
@@ -46,20 +46,20 @@ def run():
         print(f"!! [进程 {rank}] 初始化失败。请检查防火墙或网络设置。\n错误信息: {e}")
         return
 
-    # 3. 设置 GPU
+    # 设置 GPU
     torch.cuda.set_device(local_gpu_id)
     device = torch.device(f"cuda:{local_gpu_id}")
 
-    # 4. 准备数据
+    # 准备数据
     # Rank 0 拿着数字 10，Rank 1 拿着数字 20
     tensor = torch.tensor([10.0 if rank == 0 else 20.0], device=device)
     print(f"    [进程 {rank}] 归约前的数据: {tensor.item()}")
 
-    # 5. 执行 All-Reduce (求和)
+    # 执行 All-Reduce (求和)
     # 这一步会互相等待，直到两边都运行到这里
     dist.all_reduce(tensor, op=dist.ReduceOp.SUM)
 
-    # 6. 验证结果 (10 + 20 应该等于 30)
+    # 验证结果 (10 + 20 应该等于 30)
     result = tensor.item()
     print(f"    [进程 {rank}] 归约后的数据: {result}")
 
