@@ -201,7 +201,7 @@ def benchmark_attention():
     # }
     # col_widths = {key: len(value) + 4 for key, value in headers.items()}
     #
-    # # 2. 打印表头
+    # # 打印表头
     # header_line = (
     #     f"{headers['d_model']:<{col_widths['d_model']}}"
     #     f"{headers['seq_len']:<{col_widths['seq_len']}}"
@@ -213,7 +213,7 @@ def benchmark_attention():
     # print(header_line)
     # print("-" * len(header_line))  # 打印一条分隔线
     #
-    # # 3. 遍历结果并格式化打印每一行
+    # # 遍历结果并格式化打印每一行
     # for r in results:
     #     row_line = (
     #         f"{r['d_model']:<{col_widths['d_model']}}"
